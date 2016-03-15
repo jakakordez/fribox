@@ -12,6 +12,8 @@ var path = require('path');
 var dataDir = "./data/";
 
 var streznik = http.createServer(function(zahteva, odgovor) {
+    var u = zahteva.url.split("/");
+    console.log(u);
    if (zahteva.url == '/') {
        posredujOsnovnoStran(odgovor);
    } else if (zahteva.url == '/datoteke') { 
@@ -22,7 +24,11 @@ var streznik = http.createServer(function(zahteva, odgovor) {
        posredujStaticnoVsebino(odgovor, dataDir + zahteva.url.replace("/prenesi", ""), "application/octet-stream");
    } else if (zahteva.url == "/nalozi") {
        naloziDatoteko(zahteva, odgovor);
-   } else {
+   } else if(u[1] == "poglej"){
+       console.log("Datoteka "+u[u.length-1]);
+        posredujStaticnoVsebino(odgovor, "./data/"+u[u.length-1], "");
+   }
+   else {
        posredujStaticnoVsebino(odgovor, './public' + zahteva.url, "");
    }
 }).listen(process.env.PORT, function(){

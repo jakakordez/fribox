@@ -25,6 +25,9 @@ var streznik = http.createServer(function(zahteva, odgovor) {
    } else {
        posredujStaticnoVsebino(odgovor, './public' + zahteva.url, "");
    }
+}).listen(process.env.PORT, function(){
+    console.log("Strežnik deluje");
+    
 });
 
 function posredujOsnovnoStran(odgovor) {

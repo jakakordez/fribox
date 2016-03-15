@@ -103,14 +103,23 @@ function naloziDatoteko(zahteva, odgovor) {
  
     form.on('end', function(fields, files) {
         var zacasnaPot = this.openedFiles[0].path;
-        var datoteka = this.openedFiles[0].name;
-        fs.copy(zacasnaPot, dataDir + datoteka, function(napaka) {  
-            if (napaka) {
-                posredujNapako500(odgovor)
+        var datoteka = dataDir+this.openedFiles[0].name;
+        console.log(datoteka);
+        fs.exists(datoteka, function(datotekaObstaja) {
+            if (datotekaObstaja) {
+                posredujNapako409(odgovor);
             } else {
-                posredujOsnovnoStran(odgovor);        
+                
+                fs.copy(zacasnaPot, dataDir + datoteka, function(napaka) {  
+                    if (napaka) {
+                        posredujNapako500(odgovor)
+                    } else {
+                        posredujOsnovnoStran(odgovor);        
+                    }
+                });
             }
-        });
+        })
+        
     });
     
    
@@ -127,5 +136,11 @@ function naloziDatoteko(zahteva, odgovor) {
     function posredujNapako404(odgovor) {
         odgovor.writeHead(404, {'Content-Type': 'text/plain'});
         odgovor.write('Napaka 404: Vira ni mogoče najti!');
+        odgovor.end();
+    }
+    
+    function posredujNapako409(odgovor) {
+        odgovor.writeHead(409, {'Content-Type': 'text/plain'});
+        odgovor.write('Napaka 409: Datoteka že obstaja!');
         odgovor.end();
     }

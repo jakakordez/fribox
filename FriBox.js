@@ -13,7 +13,6 @@ var dataDir = "./data/";
 
 var streznik = http.createServer(function(zahteva, odgovor) {
     var u = zahteva.url.split("/");
-    console.log(u);
    if (zahteva.url == '/') {
        posredujOsnovnoStran(odgovor);
    } else if (zahteva.url == '/datoteke') { 
@@ -45,13 +44,13 @@ function posredujStaticnoVsebino(odgovor, absolutnaPotDoDatoteke, mimeType) {
             if (datotekaObstaja) {
                 fs.readFile(absolutnaPotDoDatoteke, function(napaka, datotekaVsebina) {
                     if (napaka) {
-                        //Posreduj napako
+                        posredujNapako500(odgovor);
                     } else {
                         posredujDatoteko(odgovor, absolutnaPotDoDatoteke, datotekaVsebina, mimeType);
                     }
                 })
             } else {
-                //Posreduj napako
+                posredujNapako404(odgovor);
             }
         })
 }
@@ -70,7 +69,7 @@ function posredujSeznamDatotek(odgovor) {
     odgovor.writeHead(200, {'Content-Type': 'application/json'});
     fs.readdir(dataDir, function(napaka, datoteke) {
         if (napaka) {
-            //Posreduj napako
+            posredujNapako500(odgovor);
         } else {
             var rezultat = [];
             for (var i=0; i<datoteke.length; i++) {
@@ -97,10 +96,26 @@ function naloziDatoteko(zahteva, odgovor) {
         var datoteka = this.openedFiles[0].name;
         fs.copy(zacasnaPot, dataDir + datoteka, function(napaka) {  
             if (napaka) {
-                //Posreduj napako
+                posredujNapako500(odgovor)
             } else {
                 posredujOsnovnoStran(odgovor);        
             }
         });
     });
+    
+   
 }
+
+ // Metoda, ki se kliče, ko pride na strežniku do napake
+    function posredujNapako500(odgovor) {
+        odgovor.writeHead(500, {'Content-Type': 'text/plain'});
+        odgovor.write('Napaka 500: Prišlo je do napake strežnika.')
+        odgovor.end();
+    }
+    
+    // Metoda, ki se kliče, ko zahtevamo datoteko, ki ne obstaja
+    function posredujNapako404(odgovor) {
+        odgovor.writeHead(404, {'Content-Type': 'text/plain'});
+        odgovor.write('Napaka 404: Vira ni mogoče najti!');
+        odgovor.end();
+    }

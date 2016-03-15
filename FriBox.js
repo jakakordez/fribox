@@ -18,13 +18,12 @@ var streznik = http.createServer(function(zahteva, odgovor) {
    } else if (zahteva.url == '/datoteke') { 
        posredujSeznamDatotek(odgovor);
    } else if (zahteva.url.startsWith('/brisi')) { 
-       izbrisiDatoteko(odgovor, dataDir + zahteva.url.replace("/brisi", ""));
+       izbrisiDatoteko(odgovor, dataDir + u[u.length-1]);
    } else if (zahteva.url.startsWith('/prenesi')) { 
        posredujStaticnoVsebino(odgovor, dataDir + zahteva.url.replace("/prenesi", ""), "application/octet-stream");
    } else if (zahteva.url == "/nalozi") {
        naloziDatoteko(zahteva, odgovor);
    } else if(u[1] == "poglej"){
-       console.log("Datoteka "+u[u.length-1]);
         posredujStaticnoVsebino(odgovor, "./data/"+u[u.length-1], "");
    }
    else {
@@ -34,6 +33,17 @@ var streznik = http.createServer(function(zahteva, odgovor) {
     console.log("Strežnik deluje");
     
 });
+
+function izbrisiDatoteko(odgovor, pot){
+    console.log(pot);
+    fs.exists(pot, function(datotekaObstaja) {
+        if (datotekaObstaja) {
+            fs.unlink(pot);
+        } else {
+            posredujNapako404(odgovor);
+        }
+    })
+}
 
 function posredujOsnovnoStran(odgovor) {
     posredujStaticnoVsebino(odgovor, './public/fribox.html', "");

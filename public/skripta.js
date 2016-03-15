@@ -11,6 +11,7 @@ window.addEventListener('load', function() {
 	}
 	
 	document.querySelector("#nalozi").addEventListener("click", prizgiCakanje);
+
 	
 	//Pridobi seznam datotek
 	var pridobiSeznamDatotek = function(event) {
@@ -48,10 +49,15 @@ window.addEventListener('load', function() {
 							| <span><a href='/prenesi/" + datoteka.datoteka + "' target='_self'>Prenesi</a></span> \
 							| <span akcija='brisi' datoteka='"+ datoteka.datoteka +"'>Izbriši</span> </div> \
 					    </div>";	
+					    
 				}
 				
 				if (datoteke.length > 0) {
-					document.querySelector("span[akcija=brisi]").addEventListener("click", brisi);
+					console.log(document.querySelectorAll("span[akcija=brisi]"));
+					var es = document.querySelectorAll("span[akcija=brisi]");
+					for(var i = 0; i < es.length; i++){
+						es[i].addEventListener("click", brisi);
+					}
 				}
 				ugasniCakanje();
 			}
@@ -60,10 +66,9 @@ window.addEventListener('load', function() {
 		xhttp.send();
 	}
 	
-		pridobiSeznamDatotek();
-	
-	var brisi = function(event) {
+		var brisi = function(event) {
 		prizgiCakanje();
+		alert("A");
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (xhttp.readyState == 4 && xhttp.status == 200) {
@@ -78,5 +83,9 @@ window.addEventListener('load', function() {
 		xhttp.open("GET", "/brisi/"+this.getAttribute("datoteka"), true);
 		xhttp.send();
 	}
+	
+		pridobiSeznamDatotek();
+	
+	
 
 });
